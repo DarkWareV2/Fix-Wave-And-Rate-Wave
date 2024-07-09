@@ -4,6 +4,7 @@ import os
 import ctypes
 import tkinter as tk
 from tkinter import messagebox
+import subprocess  # Import subprocess module
 
 # Initialize Pygame
 pygame.init()
