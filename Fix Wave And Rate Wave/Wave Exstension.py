@@ -90,16 +90,24 @@ pygame.display.flip()
 
 # Function to run batch file as administrator
 def run_as_admin():
-    bat_path = os.path.join(script_dir, 'Wave Fixer Folder Files', 'Wave Install Fixer.bat')
+    # Construct the path to the batch file relative to the script's directory
+    bat_filename = 'Wave Install Fixer.bat'
+    bat_path = os.path.join(script_dir, 'Wave Fixer Folder Files', bat_filename)
+    
     if not os.path.exists(bat_path):
-        print(f"Error: Batch file '{bat_path}' not found")
+        print(f"Error: Batch file '{bat_filename}' not found at '{bat_path}'")
         return
     
     # Create a confirmation dialog
     confirm = messagebox.askquestion('Confirm Action', 'Are you sure you want to open Wave Install Fixer?', icon='warning')
     if confirm == 'yes':
-        # Run batch file as administrator
-        subprocess.Popen([bat_path], shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        try:
+            # Run batch file as administrator
+            subprocess.Popen([bat_path], shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        except Exception as e:
+            print(f"Error executing batch file: {e}")
+            # Optionally, show an error message
+            messagebox.showerror('Error', f"Error executing batch file: {e}")
     else:
         print("Operation canceled.")
 
