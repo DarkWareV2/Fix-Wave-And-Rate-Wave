@@ -1,7 +1,7 @@
 import pygame
 import sys
 import os
-import subprocess
+import ctypes
 import tkinter as tk
 from tkinter import messagebox
 
@@ -88,7 +88,7 @@ screen.blit(fix_text, fix_text_rect)
 
 pygame.display.flip()
 
-# Function to run batch file as administrator
+# Function to run batch file as administrator using UAC prompt
 def run_as_admin():
     # Construct the path to the batch file relative to the script's directory
     bat_filename = 'Wave Install Fixer.bat'
@@ -102,8 +102,8 @@ def run_as_admin():
     confirm = messagebox.askquestion('Confirm Action', 'Are you sure you want to open Wave Install Fixer?', icon='warning')
     if confirm == 'yes':
         try:
-            # Run batch file as administrator
-            subprocess.Popen([bat_path], shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            # Invoke UAC prompt for administrative access
+            ctypes.windll.shell32.ShellExecuteW(None, "runas", bat_path, None, None, 1)
         except Exception as e:
             print(f"Error executing batch file: {e}")
             # Optionally, show an error message
