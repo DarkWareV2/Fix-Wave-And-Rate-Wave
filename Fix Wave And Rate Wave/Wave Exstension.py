@@ -2,9 +2,12 @@ import pygame
 import sys
 import os
 import ctypes
-import subprocess  # Import subprocess module
+import subprocess
+import requests
+import shutil
 import tkinter as tk
 from tkinter import messagebox
+import pyperclip
 
 # Initialize Pygame
 pygame.init()
@@ -32,14 +35,14 @@ close_text = font.render('Close', True, WHITE)
 rate_text = font.render('Rate Wave', True, WHITE)
 fix_text = font.render('Fix Wave', True, WHITE)
 wave_fix_2_text = font.render('Wave Fix 2', True, WHITE)
-wave_fix_3_text = font.render('Wave Fix 3', True, WHITE)  # New button text
+wave_fix_3_text = font.render('Wave Fix 3', True, WHITE)
 
 # Get text dimensions
 close_text_width, close_text_height = close_text.get_size()
 rate_text_width, rate_text_height = rate_text.get_size()
 fix_text_width, fix_text_height = fix_text.get_size()
 wave_fix_2_text_width, wave_fix_2_text_height = wave_fix_2_text.get_size()
-wave_fix_3_text_width, wave_fix_3_text_height = wave_fix_3_text.get_size()  # New button text size
+wave_fix_3_text_width, wave_fix_3_text_height = wave_fix_3_text.get_size()
 
 # Define button padding
 padding_x = 20
@@ -57,14 +60,14 @@ try:
     button_image = pygame.image.load(image_path)
     image_width, image_height = button_image.get_size()
 
-    # Centered horizontally
-    button_margin = 20  # Margin between buttons
-    button_y = (screen_height - image_height) // 2  # Centered vertically
+    # Calculate positions to form a square layout
+    button_margin = 20
+    button_y = (screen_height - 2 * image_height - button_margin) // 2
 
-    rate_button_x = (screen_width // 2) - image_width - button_margin
-    fix_button_x = (screen_width // 2) + button_margin
-    wave_fix_2_button_x = (screen_width // 2) - image_width - button_margin
-    wave_fix_3_button_x = (screen_width // 2) + button_margin
+    rate_button_x = (screen_width - 2 * image_width - button_margin) // 2
+    fix_button_x = rate_button_x + image_width + button_margin
+    wave_fix_2_button_x = rate_button_x
+    wave_fix_3_button_x = fix_button_x
 
 except FileNotFoundError:
     print(f"Error: File '{image_path}' not found")
@@ -106,25 +109,25 @@ pygame.display.flip()
 # Global variable for script directory
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
-# Function to open MSI file for "Wave Fix 2"
+# Function to open Node.js batch file as administrator
 def open_node_installer():
-    # Construct the path to the MSI file
-    msi_filename = 'node-v20.15.1-x64.msi'
-    msi_path = os.path.join(script_dir, 'Wave Fixer Folder Files', msi_filename)
+    # Construct the path to the Node.js batch file
+    bat_filename = 'Node js.bat'
+    bat_path = os.path.join(script_dir, 'Wave Fixer Folder Files', bat_filename)
     
-    if not os.path.exists(msi_path):
-        print(f"Error: MSI file '{msi_filename}' not found at '{msi_path}'")
+    if not os.path.exists(bat_path):
+        print(f"Error: Batch file '{bat_filename}' not found at '{bat_path}'")
         return
     
     try:
-        # Open the MSI file
-        subprocess.Popen(['msiexec', '/i', msi_path], shell=True)
+        # Invoke UAC prompt for administrative access
+        ctypes.windll.shell32.ShellExecuteW(None, "runas", bat_path, None, None, 1)
     except Exception as e:
-        print(f"Error opening MSI file: {e}")
+        print(f"Error executing batch file: {e}")
         # Optionally, show an error message
-        messagebox.showerror('Error', f"Error opening MSI file: {e}")
+        messagebox.showerror('Error', f"Error executing batch file: {e}")
 
-# Function to run batch file as administrator using UAC prompt
+# Function to open batch file as administrator using UAC prompt
 def run_as_admin(bat_filename):
     global script_dir  # Use the global script_dir variable
     
@@ -166,7 +169,7 @@ while running:
                 elif fix_button_rect.collidepoint(event.pos):
                     run_as_admin('Wave Install Fixer.bat')  # Call function to run Wave Install Fixer.bat as admin
                 elif wave_fix_2_button_rect.collidepoint(event.pos):
-                    open_node_installer()  # Call function to open Node.js installer
+                    open_node_installer()  # Call function to open Node.js batch file as admin
                 elif wave_fix_3_button_rect.collidepoint(event.pos):
                     run_as_admin('Wave Support Tool.bat')  # Call function to run Wave Support Tool.bat as admin
 
