@@ -21,7 +21,7 @@ if %errorlevel% neq 0 (
 
 powershell.exe -Command "$action = New-ScheduledTaskAction -Execute '"%userprofile%\Desktop\install_wave.bat"'; $trigger = New-ScheduledTaskTrigger -AtLogon; $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries; $taskName = 'InstallWave'; $taskDescription = 'Runs the bat file that installs wave'; Register-ScheduledTask -Action $action -Trigger $trigger -TaskName $taskName -Description $taskDescription -Settings $settings -RunLevel Highest -Force"
 
-powershell -Command Write-Host "All in one support tool created by mi_aio" -ForegroundColor Red
+powershell -Command Write-Host "All in one support tool created by By A Dev" -ForegroundColor Red
 echo.
 powershell -Command "Start-Process PowerShell -ArgumentList 'Add-MpPreference -ExclusionPath \"%localappdata%\Wave\"' -Verb RunAs"
 
