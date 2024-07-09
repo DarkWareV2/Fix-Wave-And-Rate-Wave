@@ -9,7 +9,7 @@
 
 @echo off
 
-powershell -Command Write-Host "Support tool created by mi_aio" -ForegroundColor Red
+powershell -Command Write-Host "Support tool created by By A Dev" -ForegroundColor Red
 echo.
 
 cd /d %userprofile%\Desktop
