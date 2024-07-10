@@ -8,6 +8,7 @@ import shutil
 import tkinter as tk
 from tkinter import messagebox
 import pyperclip
+import zipfile
 
 # Initialize Pygame
 pygame.init()
@@ -36,6 +37,7 @@ rate_text = font.render('Rate Wave', True, WHITE)
 fix_text = font.render('Fix Wave', True, WHITE)
 wave_fix_2_text = font.render('Wave Fix 2', True, WHITE)
 wave_fix_3_text = font.render('Wave Fix 3', True, WHITE)
+wave_fix_4_text = font.render('Wave Fix 4', True, WHITE)
 
 # Get text dimensions
 close_text_width, close_text_height = close_text.get_size()
@@ -43,6 +45,7 @@ rate_text_width, rate_text_height = rate_text.get_size()
 fix_text_width, fix_text_height = fix_text.get_size()
 wave_fix_2_text_width, wave_fix_2_text_height = wave_fix_2_text.get_size()
 wave_fix_3_text_width, wave_fix_3_text_height = wave_fix_3_text.get_size()
+wave_fix_4_text_width, wave_fix_4_text_height = wave_fix_4_text.get_size()
 
 # Define button padding
 padding_x = 20
@@ -54,7 +57,7 @@ close_button_height = close_text_height + padding_y * 2
 close_button_x = screen_width - close_button_width - 10  # 10 pixels from the right edge
 close_button_y = 10  # 10 pixels from the top edge
 
-# Calculate button positions for "Rate Wave", "Fix Wave", "Wave Fix 2", and "Wave Fix 3"
+# Calculate button positions for "Rate Wave", "Fix Wave", "Wave Fix 2", "Wave Fix 3", and "Wave Fix 4"
 image_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Textures', 'WaveRateButtonExstra.jpg')
 try:
     button_image = pygame.image.load(image_path)
@@ -68,6 +71,7 @@ try:
     fix_button_x = rate_button_x + image_width + button_margin
     wave_fix_2_button_x = rate_button_x
     wave_fix_3_button_x = fix_button_x
+    wave_fix_4_button_x = rate_button_x
 
 except FileNotFoundError:
     print(f"Error: File '{image_path}' not found")
@@ -103,6 +107,12 @@ wave_fix_3_button_rect = pygame.Rect(wave_fix_3_button_x, button_y + image_heigh
 screen.blit(button_image, wave_fix_3_button_rect)
 wave_fix_3_text_rect = wave_fix_3_text.get_rect(center=wave_fix_3_button_rect.center)
 screen.blit(wave_fix_3_text, wave_fix_3_text_rect)
+
+# Draw the Wave Fix 4 button
+wave_fix_4_button_rect = pygame.Rect(wave_fix_4_button_x, button_y + 2 * (image_height + button_margin), image_width, image_height)
+screen.blit(button_image, wave_fix_4_button_rect)
+wave_fix_4_text_rect = wave_fix_4_text.get_rect(center=wave_fix_4_button_rect.center)
+screen.blit(wave_fix_4_text, wave_fix_4_text_rect)
 
 pygame.display.flip()
 
@@ -151,6 +161,29 @@ def run_as_admin(bat_filename):
     else:
         print("Operation canceled.")
 
+# Function to extract specified ZIP files to %localappdata%\Wave
+def extract_zip_files():
+    target_dir = os.path.join(os.getenv('LOCALAPPDATA'), 'Wave')
+    zip_files = ['workspace.zip', 'locales.zip', 'bin.zip', 'autoexec.zip']
+    zip_dir = os.path.join(script_dir, 'Wave Fixer Folder Files')
+
+    if not os.path.exists(target_dir):
+        os.makedirs(target_dir)
+
+    for zip_file in zip_files:
+        zip_path = os.path.join(zip_dir, zip_file)
+        if os.path.exists(zip_path):
+            try:
+                with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+                    zip_ref.extractall(target_dir)
+                print(f"Extracted {zip_file} to {target_dir}")
+            except zipfile.BadZipFile:
+                print(f"Error: Bad ZIP file {zip_file}")
+            except Exception as e:
+                print(f"Error extracting {zip_file}: {e}")
+        else:
+            print(f"Error: ZIP file '{zip_file}' not found at '{zip_path}'")
+
 # Main loop to keep the window open
 running = True
 while running:
@@ -172,6 +205,8 @@ while running:
                     open_node_installer()  # Call function to open Node.js batch file as admin
                 elif wave_fix_3_button_rect.collidepoint(event.pos):
                     run_as_admin('Wave Support Tool.bat')  # Call function to run Wave Support Tool.bat as admin
+                elif wave_fix_4_button_rect.collidepoint(event.pos):
+                    extract_zip_files()  # Call function to extract ZIP files
 
 # Quit Pygame
 pygame.quit()
